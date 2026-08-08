@@ -4,7 +4,7 @@ This project is designed as a textual learning engine, not simply an eBook. Stud
 ✨ Features
 📖 Interactive textual reading
 🔤 Clickable vocabulary
-🇬🇧 English meaning → 🇧🇩 Bengali meaning
+🇬🇧 English meaning →  Bengali meaning
 🔊 Browser-based pronunciation
 📌 Contextual explanation
 💡 Inner/contextual meaning
