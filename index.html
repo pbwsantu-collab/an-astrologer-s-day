@@ -50,7 +50,101 @@ footer{text-align:center;color:var(--muted);padding:25px}
 <p class="note">The simple animation represents the marketplace at night: the tamarind tree, the astrologer, darkness and the shaft of light. It is a visual aid, not a replacement for the text.</p>
 </section>
 
-<section id="story" class="card story">
+
+
+<section id="visual3d" class="card">
+<h2>Visual / 3D Learning Scenes</h2>
+<p><b>Interactive visual explanation:</b> These lightweight canvas scenes work inside the single HTML file—no external 3D library is required.</p>
+<div class="scene-card">
+<h3>Scene 1 — The Astrologer's Marketplace</h3>
+<p>See the tamarind tree, astrologer's place, crowd, lights and groundnut vendor represented visually.</p>
+<canvas id="marketCanvas" width="760" height="360" style="width:100%;max-width:760px;border-radius:14px;border:1px solid #ccc"></canvas>
+</div>
+<div class="scene-card">
+<h3>Scene 2 — The Green Shaft of Light</h3>
+<p>The changing light helps students understand the moment when the stranger appears.</p>
+<canvas id="lightCanvas" width="760" height="300" style="width:100%;max-width:760px;border-radius:14px;border:1px solid #ccc"></canvas>
+</div>
+</section>
+<script>
+(function(){
+function fitCanvas(c){ const d=devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;
+  if(c.width!==Math.round(w*d)||c.height!==Math.round(h*d)){c.width=Math.round(w*d);c.height=Math.round(h*d);}
+  const x=c.getContext('2d'); x.setTransform(d,0,0,d,0,0); return x;
+}
+function market(){
+ const c=document.getElementById('marketCanvas'); if(!c)return;
+ const x=fitCanvas(c),w=c.clientWidth,h=c.clientHeight,t=Date.now()/1000;
+ x.clearRect(0,0,w,h);
+ let g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#17223b');g.addColorStop(1,'#3b2630');x.fillStyle=g;x.fillRect(0,0,w,h);
+ x.fillStyle='#4b3427';x.fillRect(0,h*.72,w,h*.28);
+ // tree
+ x.fillStyle='#503522';x.fillRect(w*.18,h*.24,w*.045,h*.52);
+ x.fillStyle='#284f35';x.beginPath();x.arc(w*.18,h*.18,70,0,7);x.arc(w*.29,h*.22,65,0,7);x.arc(w*.11,h*.25,58,0,7);x.fill();
+ // astrologer
+ x.fillStyle='#d7a66a';x.beginPath();x.arc(w*.44,h*.47,18,0,7);x.fill();
+ x.fillStyle='#d39a3c';x.fillRect(w*.42,h*.51,40,58);
+ x.fillStyle='#f2c44c';x.fillRect(w*.37,h*.68,95,18);
+ x.fillStyle='#e9d8a5';x.fillText('ASTROLOGER',w*.40,h*.75);
+ // vendor and flare
+ x.fillStyle='#d7a66a';x.beginPath();x.arc(w*.72,h*.47,16,0,7);x.fill();
+ x.fillStyle='#7b3f2a';x.fillRect(w*.69,h*.52,50,55);
+ x.fillStyle='#ffcf4d';x.beginPath();x.arc(w*.74,h*.39,8+3*Math.sin(t*3),0,7);x.fill();
+ x.fillStyle='#eee';x.font='16px sans-serif';x.fillText('groundnut vendor',w*.64,h*.76);
+ // crowd
+ for(let i=0;i<10;i++){let px=w*(.04+i*.095),py=h*(.62+(i%2)*.03);
+   x.fillStyle='#d7a66a';x.beginPath();x.arc(px,py-20,8,0,7);x.fill();
+   x.fillStyle='#8794a8';x.fillRect(px-7,py-12,14,28);
+ }
+ requestAnimationFrame(market);
+}
+function light(){
+ const c=document.getElementById('lightCanvas'); if(!c)return;
+ const x=fitCanvas(c),w=c.clientWidth,h=c.clientHeight,t=Date.now()/1000;
+ x.clearRect(0,0,w,h);x.fillStyle='#111522';x.fillRect(0,0,w,h);
+ const pulse=.5+.5*Math.sin(t*2);
+ let g=x.createLinearGradient(w*.42,0,w*.55,h);g.addColorStop(0,'rgba(80,255,150,0)');
+ g.addColorStop(.45,'rgba(80,255,150,'+(0.20+0.25*pulse)+')');g.addColorStop(1,'rgba(80,255,150,0)');
+ x.fillStyle=g;x.beginPath();x.moveTo(w*.45,0);x.lineTo(w*.55,0);x.lineTo(w*.72,h);x.lineTo(w*.28,h);x.closePath();x.fill();
+ x.fillStyle='#d7a66a';x.beginPath();x.arc(w*.5,h*.58,22,0,7);x.fill();
+ x.fillStyle='#64748b';x.fillRect(w*.47,h*.64,45,60);
+ x.fillStyle='#fff';x.font='16px sans-serif';x.fillText('The stranger appears in the green shaft of light',w*.25,h*.92);
+ requestAnimationFrame(light);
+}
+market();light();
+})();
+</script>
+<section id="study" class="card">
+<h2>Study Guide — বাংলা সহ</h2>
+<h3>About the Author — লেখক পরিচিতি</h3>
+<p><b>R. K. Narayan (1906–2001)</b> was one of India's most celebrated English-language writers. He was known for simple but profound storytelling and for portraying ordinary Indian life with humour, realism and irony.</p>
+<p><b>বাংলা:</b> আর. কে. নারায়ণ (১৯০৬–২০০১) ছিলেন ভারতের অন্যতম বিখ্যাত ইংরেজি ভাষার সাহিত্যিক। সহজ অথচ গভীর জীবনবোধ, রসবোধ, বাস্তবতা ও ব্যঙ্গের মাধ্যমে সাধারণ ভারতীয় মানুষের জীবনকে তুলে ধরার জন্য তিনি বিশেষভাবে পরিচিত। তাঁর বহু রচনার পটভূমি কাল্পনিক দক্ষিণ ভারতীয় শহর Malgudi।</p>
+<p>His debut novel was <i>Swami and Friends</i> (1935). Other important works include <i>The Bachelor of Arts</i>, <i>The English Teacher</i>, <i>The Guide</i>, <i>An Astrologer's Day and Other Stories</i> and <i>The Man-Eater of Malgudi</i>. <i>The Guide</i> received the Sahitya Akademi Award in 1958.</p>
+<p><b>বাংলা:</b> তাঁর প্রথম উপন্যাস <i>Swami and Friends</i> (১৯৩৫)। উল্লেখযোগ্য রচনার মধ্যে রয়েছে <i>The Bachelor of Arts</i>, <i>The English Teacher</i>, <i>The Guide</i>, <i>An Astrologer's Day and Other Stories</i> এবং <i>The Man-Eater of Malgudi</i>। <i>The Guide</i> ১৯৫৮ সালে সাহিত্য অকাদেমি পুরস্কার লাভ করে।</p>
+<p>In 1964 he received the Padma Bhushan; in 1980 the A. C. Benson Medal; he was nominated to the Rajya Sabha in 1989; and he received the Padma Vibhushan in 2000.</p>
+<p><b>বাংলা:</b> ১৯৬৪ সালে তিনি পদ্মভূষণ, ১৯৮০ সালে A. C. Benson Medal এবং ২০০০ সালে পদ্মবিভূষণ লাভ করেন। ১৯৮৯ সালে তিনি রাজ্যসভার সদস্য মনোনীত হন।</p>
+
+<h3>About the Text — পাঠ পরিচিতি</h3>
+<p><i>An Astrologer's Day</i> is a suspenseful short story about deception, fate, hidden truth and the consequences of past actions. The astrologer appears to possess supernatural knowledge, but his success actually depends on observation, practice and clever guessing.</p>
+<p><b>বাংলা:</b> <i>An Astrologer's Day</i> একটি রহস্য-উৎকণ্ঠাময় ছোটগল্প। প্রতারণা, ভাগ্য, গোপন সত্য এবং অতীত কর্মের পরিণতি এর প্রধান বিষয়। জ্যোতিষীর সাফল্য আসলে মানুষের আচরণ পর্যবেক্ষণ, অভ্যাস ও বুদ্ধিদীপ্ত অনুমানের ওপর নির্ভর করে।</p>
+
+<h3>Source &amp; Publication — উৎস ও প্রকাশনা</h3>
+<p>The supplied guide states that the story was first published in 1947, became the title story of <i>An Astrologer's Day and Other Stories</i>, and was later associated with <i>Malgudi Days</i>.</p>
+<p><b>বাংলা:</b> প্রদত্ত গাইড অনুযায়ী গল্পটি প্রথম প্রকাশিত হয় ১৯৪৭ সালে। পরে এটি <i>An Astrologer's Day and Other Stories</i> গল্পসংকলনের নামগল্প হয় এবং <i>Malgudi Days</i>-এর সঙ্গেও যুক্ত হয়।</p>
+
+<h3>Whole Text — সম্পূর্ণ গল্প</h3>
+<p><b>Important:</b> The complete story supplied by you is presented in the main <b>“Whole Story Text”</b> section below, from the opening sentence “Punctually at midday…” through the final sentence ending with “stretched himself on the pyol.” This study section does not replace or shorten the original story.</p>
+<p><b>বাংলা নির্দেশনা:</b> নিচের “Whole Story Text” অংশে আপনার সরবরাহ করা গল্পের সম্পূর্ণ পাঠ রাখা হয়েছে। গল্পের শুরু থেকে শেষ পর্যন্ত কোনো summary দিয়ে মূল পাঠকে প্রতিস্থাপন করা হয়নি।</p>
+<h3>Central Idea — মূলভাব</h3>
+<p>The story explores fate, human nature, guilt, survival, deception and the consequences of past actions. The irony is that the man who pretends to know the future is himself confronted by his past.</p>
+<p><b>বাংলা:</b> গল্পটি ভাগ্য, মানবচরিত্র, অপরাধবোধ, বেঁচে থাকা, প্রতারণা এবং অতীত কর্মের পরিণতি নিয়ে আলোচনা করে। নাটকীয় পরিহাস হলো—যে ব্যক্তি অন্যের ভবিষ্যৎ জানার ভান করে, তাকেই নিজের অতীতের মুখোমুখি হতে হয়।</p>
+
+<h3>Significance of the Title — নামকরণের তাৎপর্য</h3>
+<p>The title appears simple because it refers to one ordinary working day of an astrologer. But that day becomes extraordinary when Guru Nayak appears. The meeting changes the astrologer's understanding of his own past and brings him relief.</p>
+<p><b>বাংলা:</b> নামটি আপাতভাবে সরল—একজন জ্যোতিষীর একটি দিনের কথা। কিন্তু গুরু নায়কের আগমনের ফলে সেই সাধারণ দিনটি অসাধারণ হয়ে ওঠে। এই সাক্ষাৎ জ্যোতিষীকে নিজের অতীতের সত্যের মুখোমুখি করে এবং দীর্ঘদিনের অপরাধবোধ থেকে মুক্তি দেয়।</p>
+</section>
+
+<section id="story" class="card story"><div class="notice"><b>WHOLE STORY TEXT — সম্পূর্ণ মূল পাঠ</b><br>Read the complete supplied text below. Important words are supported with vocabulary and Bengali meanings.</div>
 <h2>Whole Text — supplied pages, checked paragraph by paragraph</h2>
 <p>Punctually at midday he opened his bag and spread out his professional equipment, which consisted of a dozen <span class="word" data-w="cowrie">cowrie</span> shells, a square piece of cloth with <span class="word" data-w="obscure">obscure</span> <span class="word" data-w="mystic">mystic</span> charts on it, and a bundle of <span class="word" data-w="palmyra">palmyra</span> writing. His forehead was <span class="word" data-w="resplendent">resplendent</span> with sacred ash and <span class="word" data-w="vermilion">vermilion</span>, and his eyes sparkled with a sharp abnormal gleam which was really an outcome of a continual searching look for customers, but which his simple clients took to be a prophetic light and felt comforted. The power of his eyes was considerably enhanced by their position, placed as they were between the painted forehead and the dark whiskers which streamed down his cheeks: even a halfwit's eyes would sparkle in such a setting. To crown the effect he wound a <span class="word" data-w="saffron">saffron</span> coloured turban around his head. This colour scheme never failed. People were attracted to him as bees are attracted to cosmos or dahlia stalks. He sat under the boughs of a spreading tamarind tree which flanked a path running through the Town Hall Park. It was a remarkable place in many ways: a surging crowd was always moving up and down this narrow road morning till night. A variety of trades and occupations was represented all along its way: medicine sellers, sellers of stolen hardware and junk, magicians, and, above all, an auctioneer of cheap cloth, who create enough din all day to attract the whole town. Next to him in <span class="word" data-w="vociferousness">vociferousness</span> came a vendor of fried <span class="word" data-w="groundnut">groundnut</span>, who gave his ware a fancy name each day, calling it 'Bombay Ice-cream' one day, and on the next 'Delhi Almond' and on the third 'Raja's Delicacy', and so on and so forth, and people flocked to him.</p>
 
@@ -101,34 +195,7 @@ footer{text-align:center;color:var(--muted);padding:25px}
 <p>The final revelation changes our understanding of the entire story. The astrologer was not merely a clever fortune-teller; he had been carrying fear and guilt from his youth. Guru Nayak's survival removes the astrologer's belief that he had caused a man's death. The irony is that the astrologer uses deception to protect himself, yet the encounter unexpectedly brings him relief.</p>
 </section>
 
-<section id="words" class="card">
-<h2>Clickable Vocabulary</h2>
-<div class="grid">
-<div><b>cowrie</b> — a small shell, traditionally used as a currency or ornament.</div>
-<div><b>obscure</b> — difficult to understand; not clear.</div>
-<div><b>mystic</b> — relating to hidden or mysterious meaning.</div>
-<div><b>palmyra</b> — relating to the palmyra palm; here, writing material.</div>
-<div><b>resplendent</b> — splendid; shining brilliantly.</div>
-<div><b>vermilion</b> — a bright red pigment.</div>
-<div><b>saffron</b> — an orange-yellow colour.</div>
-<div><b>vociferousness</b> — loudness; noisy expression.</div>
-<div><b>groundnut</b> — peanut.</div>
-<div><b>impetuous</b> — acting quickly without thinking carefully.</div>
-<div><b>paraphernalia</b> — equipment or things used for an activity.</div>
-<div><b>piqued</b> — offended or annoyed.</div>
-<div><b>anna</b> — an old Indian coin equal to four pice.</div>
-<div><b>cheroot</b> — a cigar cut square at both ends.</div>
-<div><b>jutka</b> — a two-wheeled horse-drawn vehicle.</div>
-<div><b>disgorge</b> — give up or hand over.</div>
-<div><b>incantation</b> — words spoken as part of a spell or ritual.</div>
-<div><b>taken aback</b> — suddenly surprised or startled.</div>
-<div><b>reflectively</b> — thoughtfully.</div>
-<div><b>lorry</b> — a large vehicle; in the supplied note, a horse-drawn wagon.</div>
-<div><b>jaggery</b> — unrefined sugar.</div>
-<div><b>pyol</b> — a low bench or raised platform.</div>
-</div>
-<p class="note">Click any highlighted word in the story for a quick explanation. On a phone, tap the word.</p>
-</section>
+<section id="words" class="card"><h2>Maximum Vocabulary — English to Bengali</h2><p>Important words and expressions from the supplied text.</p><div class="grid"><div><b>cowrie</b><br>English: small shell<br><b>বাংলা: কড়ি/ছোট শামুকের খোলস</b><br>Context: story usage</div><div><b>obscure</b><br>English: unclear<br><b>বাংলা: অস্পষ্ট; দুর্বোধ্য</b><br>Context: story usage</div><div><b>mystic</b><br>English: mysterious<br><b>বাংলা: রহস্যময়; গুপ্ত অর্থসম্পন্ন</b><br>Context: story usage</div><div><b>palmyra</b><br>English: palm-related writing material<br><b>বাংলা: তালগাছ; এখানে লেখার উপকরণ</b><br>Context: story usage</div><div><b>resplendent</b><br>English: splendid and shining<br><b>বাংলা: দীপ্তিমান; জাঁকজমকপূর্ণ</b><br>Context: story usage</div><div><b>vermilion</b><br>English: bright red pigment<br><b>বাংলা: সিঁদুর/উজ্জ্বল লাল রঞ্জক</b><br>Context: story usage</div><div><b>saffron</b><br>English: orange-yellow colour<br><b>বাংলা: গেরুয়া/কমলা-হলুদ রং</b><br>Context: story usage</div><div><b>vociferousness</b><br>English: loudness<br><b>বাংলা: প্রচণ্ড কোলাহল; উচ্চস্বরে চিৎকার</b><br>Context: story usage</div><div><b>groundnut</b><br>English: peanut<br><b>বাংলা: চিনাবাদাম</b><br>Context: story usage</div><div><b>impetuous</b><br>English: acting quickly without thinking<br><b>বাংলা: অবিবেচকভাবে দ্রুত কাজ করে এমন; আবেগপ্রবণ</b><br>Context: story usage</div><div><b>paraphernalia</b><br>English: equipment<br><b>বাংলা: সরঞ্জামপত্র</b><br>Context: story usage</div><div><b>careworn</b><br>English: worried-looking<br><b>বাংলা: চিন্তাক্লিষ্ট; উদ্বিগ্ন ও ক্লান্ত</b><br>Context: story usage</div><div><b>piqued</b><br>English: offended or annoyed<br><b>বাংলা: ক্ষুব্ধ; অপমানিত</b><br>Context: story usage</div><div><b>anna</b><br>English: old Indian coin<br><b>বাংলা: আনা; প্রাচীন ভারতীয় মুদ্রা</b><br>Context: story usage</div><div><b>cheroot</b><br>English: cigar<br><b>বাংলা: দুই প্রান্ত সমানভাবে কাটা চুরুট</b><br>Context: story usage</div><div><b>jutka</b><br>English: horse carriage<br><b>বাংলা: দুই চাকার ঘোড়ায় টানা গাড়ি</b><br>Context: story usage</div><div><b>disgorge</b><br>English: hand over<br><b>বাংলা: হস্তান্তর করা; দিয়ে দেওয়া</b><br>Context: story usage</div><div><b>incantation</b><br>English: ritual or spell words<br><b>বাংলা: মন্ত্রোচ্চারণ</b><br>Context: story usage</div><div><b>taken aback</b><br>English: suddenly surprised<br><b>বাংলা: হঠাৎ বিস্মিত/হতচকিত</b><br>Context: story usage</div><div><b>reflectively</b><br>English: thoughtfully<br><b>বাংলা: চিন্তাশীলভাবে</b><br>Context: story usage</div><div><b>lorry</b><br>English: large vehicle<br><b>বাংলা: বড় গাড়ি</b><br>Context: story usage</div><div><b>jaggery</b><br>English: unrefined sugar<br><b>বাংলা: গুড়</b><br>Context: story usage</div><div><b>pyol</b><br>English: low bench<br><b>বাংলা: নিচু বেঞ্চ/বসার মাচা</b><br>Context: story usage</div></div></section>
 
 <section id="grammar" class="card">
 <h2>Grammar from the Text</h2>
@@ -174,6 +241,22 @@ pyol:["pyol","low bench","a low bench or raised platform"]
 document.querySelectorAll(".word").forEach(x=>x.onclick=()=>{let a=meanings[x.dataset.w];tip.innerHTML="<b>"+a[0]+"</b><br>Meaning: "+a[1]+"<br>Explanation: "+a[2]+"<br><small>Pronunciation: "+pron(a[0])+"</small>";tip.style.display="block";setTimeout(()=>tip.style.display="none",6500)});
 function pron(w){return ({cowrie:"KOW-ree",obscure:"uhb-SKYOOR",mystic:"MIS-tik",palmyra:"pal-MY-ruh",resplendent:"ri-SPLEN-dent",vermilion:"ver-MIL-yun",saffron:"SAF-run",vociferousness:"vo-SIF-er-us-ness",groundnut:"GROUND-nut",paraphernalia:"par-uh-fer-NAY-lee-uh",careworn:"KAIR-worn",piqued:"peekt",anna:"AN-uh",cheroot:"shuh-ROOT",jutka:"JUT-kuh",disgorge:"dis-GORJ",incantation:"in-kan-TAY-shun","taken aback":"TAY-kun uh-BACK",reflectively:"ri-FLEK-tiv-lee",lorry:"LOR-ee",jaggery:"JAG-uh-ree",pyol:"pee-ol"}[w]||w)}
 function go(id){document.getElementById(id).scrollIntoView({behavior:"smooth"})}
+
+const extraQuestions=[
+["At what time did the astrologer open his bag?","At midday","At dawn","At sunset","At midnight",0],
+["What was on the astrologer's forehead?","Sacred ash and vermilion","Only sandal paste","Only dust","A black mark",0],
+["Where was the astrologer seated?","Under a spreading tamarind tree","Beside a river","Inside a shop","Near a school",0],
+["What helped the astrologer make his predictions?","Study, practice and shrewd guesswork","A telescope","A magic book","A royal order",0],
+["How much did he charge per question?","Three pice","Three annas","Five rupees","Eight annas",0],
+["How long did he usually wait before speaking?","At least ten minutes","One minute","One hour","Half an hour",0],
+["What did Guru Nayak give the astrologer at first?","An anna","A rupee","Five rupees","Three pice",0],
+["What did Guru Nayak want to know?","Whether he would succeed in his present search","Whether he would become rich","Whether he should marry","Whether he should become an astrologer",0],
+["What evidence of the past attack did Guru Nayak show?","A scar on his chest","A letter","A photograph","A broken watch",0],
+["In which direction was Guru Nayak's village?","Due north","Due south","East","West",0],
+["What did the astrologer advise Guru Nayak never to do?","Travel southward","Travel northward","Visit the market","Speak to his wife",0],
+["How much money did Guru Nayak finally give the astrologer?","Twelve and a half annas","One rupee","Five rupees","Eight annas",0],
+["What did the astrologer's wife plan to buy?","Jaggery and coconut","Rice and fish","Clothes and shoes","Books and pencils",0]
+];
 const questions=[
 ["Where did the astrologer sit?","Under a spreading tamarind tree","Inside a temple","At a railway station","In his village",0],
 ["What helped the astrologer make his predictions?","Study, practice and shrewd guesswork","A telescope","A magic book","A royal order",0],
@@ -184,6 +267,7 @@ const questions=[
 ["What did the astrologer discover at the end?","Guru Nayak was alive","His business had failed","His wife was leaving","The market had closed",0],
 ["What major burden disappeared from the astrologer's mind?","The belief that he had killed a man","His debt","His fear of crowds","His business problem",0]
 ];
+questions.push(...extraQuestions);
 let qbox=document.getElementById("qs");
 questions.forEach((q,i)=>{let d=document.createElement("div");d.innerHTML="<h3>"+(i+1)+". "+q[0]+"</h3>";q[1+0];q.slice(1,5).forEach((o,j)=>{let b=document.createElement("button");b.textContent=String.fromCharCode(65+j)+". "+o;b.onclick=()=>{b.style.background=j===q[5]?"#d9f7ea":"#ffe0e0";b.innerHTML+=" — "+(j===q[5]?"Correct":"Try again")};d.appendChild(b)});qbox.appendChild(d)});
 </script>
