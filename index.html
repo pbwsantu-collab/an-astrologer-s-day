@@ -1,271 +1,190 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#17324d">
-<title>An Astrologer's Day — Interactive Textual Learning Book</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>An Astrologer's Day — Complete Interactive English Lesson</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7fb;color:#17202a;line-height:1.65}
-header{background:#17324d;color:#fff;padding:22px 16px;position:sticky;top:0;z-index:10}
-header h1{margin:0;font-size:24px} header p{margin:4px 0 0;opacity:.85}
-nav{display:flex;gap:8px;overflow:auto;padding:10px;background:#fff;border-bottom:1px solid #ddd;position:sticky;top:88px;z-index:9}
-nav button,.btn{border:0;border-radius:9px;padding:9px 13px;background:#e8eef5;color:#17324d;font-weight:700;cursor:pointer;white-space:nowrap}
-nav button.active,.btn.primary{background:#17324d;color:white}
-main{max-width:1050px;margin:auto;padding:18px}
-.card{background:#fff;border-radius:14px;padding:20px;margin:14px 0;box-shadow:0 2px 12px #0000000d}
-h2{color:#17324d;margin-top:0}.tag{display:inline-block;padding:4px 8px;border-radius:20px;background:#e9f0f7;margin:3px;font-size:13px}
-.lesson{font-size:18px}
-.word{color:#075f9d;text-decoration:underline dotted;cursor:pointer;font-weight:600}
-.search{width:100%;padding:12px;border:1px solid #ccd6e0;border-radius:9px;font-size:16px}
-.hidden{display:none}
-#popup{position:fixed;right:16px;bottom:16px;width:min(430px,calc(100% - 32px));max-height:75vh;overflow:auto;background:white;border-radius:15px;box-shadow:0 8px 35px #0004;padding:18px;z-index:20}
-#popup h3{margin-top:0;color:#17324d}.close{float:right;border:0;background:#eee;border-radius:50%;width:30px;height:30px;cursor:pointer}
-.option{display:block;width:100%;text-align:left;padding:11px;margin:7px 0;border:1px solid #d4dce5;background:#fafcfe;border-radius:8px;cursor:pointer}
-.option:hover{background:#edf4fa}
-.correct{background:#dff4e4!important}.wrong{background:#fde4e4!important}
-.score{font-size:20px;font-weight:700;color:#17324d}
-textarea{width:100%;min-height:150px;padding:12px;border:1px solid #ccd6e0;border-radius:9px;font-size:16px}
-footer{text-align:center;padding:30px;color:#687786}
-@media(max-width:600px){header h1{font-size:20px}main{padding:10px}.lesson{font-size:17px}.card{padding:15px}}
+:root{--bg:#f6f8fb;--card:#fff;--ink:#172033;--muted:#5d687b;--accent:#315efb;--soft:#e9efff;--line:#dce2ec;--good:#13795b}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65}
+header{background:linear-gradient(135deg,#172554,#315efb);color:white;padding:28px 18px;position:sticky;top:0;z-index:5;box-shadow:0 3px 14px #0002}
+h1{margin:0;font-size:clamp(25px,5vw,42px)}header p{margin:5px 0 0;opacity:.9}
+nav{display:flex;gap:8px;overflow:auto;margin-top:18px}nav button,.btn{border:0;border-radius:10px;padding:9px 13px;background:white;color:#172554;font-weight:700;cursor:pointer}
+main{max-width:1100px;margin:auto;padding:22px 14px 60px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin:16px 0;box-shadow:0 4px 16px #1720330a}
+h2{color:#172554;margin-top:0}h3{margin-bottom:7px}.story p{margin:0 0 18px;text-align:justify}
+.word{background:#fff1a8;border-bottom:2px solid #e0b400;padding:1px 3px;border-radius:4px;cursor:pointer}
+.note{background:var(--soft);border-left:4px solid var(--accent);padding:12px 15px;border-radius:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}.pill{display:inline-block;background:#eef2f7;padding:3px 8px;border-radius:999px;margin:3px}
+details{border:1px solid var(--line);border-radius:12px;padding:10px 13px;margin:9px 0;background:#fff}summary{font-weight:750;cursor:pointer}
+#tip{position:fixed;right:14px;bottom:14px;max-width:360px;background:#172033;color:#fff;padding:14px 16px;border-radius:13px;display:none;z-index:20;box-shadow:0 8px 28px #0004}
+.quiz button{display:block;width:100%;text-align:left;margin:7px 0;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff;cursor:pointer}.quiz button:hover{background:#eef2ff}
+.scene{height:250px;position:relative;overflow:hidden;border-radius:15px;background:linear-gradient(#09143d 0 58%,#30451e 58%);margin:10px 0}
+.moon{position:absolute;width:60px;height:60px;border-radius:50%;background:#fff4c2;right:12%;top:28px;box-shadow:0 0 25px #fff8}
+.tree{position:absolute;left:14%;bottom:35%;width:20px;height:100px;background:#4b2e1d}.tree:before{content:"";position:absolute;width:160px;height:90px;border-radius:50%;background:#284d29;left:-70px;top:-55px}
+.ast{position:absolute;bottom:19%;left:48%;width:38px;height:62px;background:#7b4b2a;border-radius:12px 12px 5px 5px}.ast:before{content:"";position:absolute;width:48px;height:18px;background:#d19a32;top:-9px;left:-5px;border-radius:50%}
+.light{position:absolute;width:100px;height:160px;left:52%;bottom:0;background:linear-gradient(90deg,transparent,#b8f4b966,transparent);transform:rotate(8deg)}
+.badge{color:var(--good);font-weight:700}
+footer{text-align:center;color:var(--muted);padding:25px}
 </style>
 </head>
 <body>
 <header>
-<h1>📖 An Astrologer's Day</h1>
-<p>R. K. Narayan • Interactive Textual Learning Book</p>
-</header>
-
-<nav id="nav">
-<button class="active" onclick="showTab('home',this)">Home</button>
-<button onclick="showTab('text',this)">Text</button>
-<button onclick="showTab('vocab',this)">Vocabulary</button>
-<button onclick="showTab('analysis',this)">Analysis</button>
-<button onclick="showTab('grammar',this)">Grammar</button>
-<button onclick="showTab('quiz',this)">MCQ</button>
-<button onclick="showTab('practice',this)">Practice</button>
+<h1>An Astrologer's Day</h1><p>R. K. Narayan • Complete interactive textual lesson</p>
+<nav>
+<button onclick="go('about')">About</button><button onclick="go('story')">Whole Text</button>
+<button onclick="go('words')">Words</button><button onclick="go('grammar')">Grammar</button><button onclick="go('quiz')">MCQs</button>
 </nav>
-
+</header>
 <main>
-<section id="home" class="tab">
-<div class="card">
-<h2>Interactive English Learning</h2>
-<p>Tap an important word in the lesson to see its English meaning, Bengali meaning, pronunciation, context, grammar and deeper significance.</p>
-<span class="tag">English → Bengali</span><span class="tag">Vocabulary</span><span class="tag">Grammar</span><span class="tag">MCQ</span><span class="tag">Context</span><span class="tag">Inner Meaning</span>
-</div>
-<div class="card">
+
+<section id="about" class="card">
 <h2>About the Author</h2>
-<p><b>R. K. Narayan (1906–2001)</b> was one of India's most celebrated English-language writers. His works often portray life in the fictional South Indian town of Malgudi. His major works include <i>Swami and Friends</i>, <i>The Bachelor of Arts</i>, <i>The English Teacher</i> and <i>The Guide</i>.</p>
-<p>His prose is known for simplicity, irony, humour and close observation of ordinary human life.</p>
-</div>
-<div class="card">
+<p>R. K. Narayan (1906–2001) was one of India's most celebrated English-language writers, known for his simple yet profound storytelling. His works often depict life in the fictional South Indian town of Malgudi, capturing the essence of Indian society with humour and realism. His debut novel, <i>Swami and Friends</i> (1935), introduced readers to Malgudi and showcased his talent for blending everyday experiences with deep philosophical insights.</p>
+<p>His major works include <i>The Bachelor of Arts</i> (1937), <i>The English Teacher</i> (1945), and <i>The Guide</i> (1958), which won the Sahitya Akademi Award and was later adapted into a successful film. Narayan's writing, influenced by Western literary traditions yet deeply rooted in Indian ethos, often explores themes of destiny, tradition, and human relationships.</p>
+<p>His prose is marked by simplicity and irony, making his narratives engaging and thought-provoking. Narayan was instrumental in popularizing Indian literature in English, earning international recognition, including the Padma Bhushan and Padma Vibhushan.</p>
 <h2>About the Text</h2>
-<p><i>An Astrologer's Day</i> is a short story involving irony, fate, deception, suspense and the consequences of the past. The astrologer earns his living through observation, practice and shrewd guesswork rather than genuine astrological knowledge.</p>
-</div>
+<p><i>An Astrologer's Day</i> is a compelling tale of irony, fate and deception. Set in a bustling Indian marketplace, it revolves around an astrologer who earns his living through observation, practice and shrewd guesswork rather than genuine astrological knowledge. The story explores how human cunning and destiny intertwine, and ends with a striking revelation about the astrologer's own past.</p>
+<div class="note"><b>Central idea:</b> fate, consequences of past actions, human nature, survival and the possibility of relief from a burden of guilt.</div>
+<h2>Visual Explanation</h2>
+<div class="scene"><div class="moon"></div><div class="tree"></div><div class="ast"></div><div class="light"></div></div>
+<p class="note">The simple animation represents the marketplace at night: the tamarind tree, the astrologer, darkness and the shaft of light. It is a visual aid, not a replacement for the text.</p>
 </section>
 
-<section id="text" class="tab hidden">
-<div class="card">
-<h2>Text — Interactive Reading</h2>
-<input class="search" id="textSearch" placeholder="Search within the lesson..." oninput="filterText()">
-</div>
-<div id="lesson" class="card lesson"></div>
+<section id="story" class="card story">
+<h2>Whole Text — supplied pages, checked paragraph by paragraph</h2>
+<p>Punctually at midday he opened his bag and spread out his professional equipment, which consisted of a dozen <span class="word" data-w="cowrie">cowrie</span> shells, a square piece of cloth with <span class="word" data-w="obscure">obscure</span> <span class="word" data-w="mystic">mystic</span> charts on it, and a bundle of <span class="word" data-w="palmyra">palmyra</span> writing. His forehead was <span class="word" data-w="resplendent">resplendent</span> with sacred ash and <span class="word" data-w="vermilion">vermilion</span>, and his eyes sparkled with a sharp abnormal gleam which was really an outcome of a continual searching look for customers, but which his simple clients took to be a prophetic light and felt comforted. The power of his eyes was considerably enhanced by their position, placed as they were between the painted forehead and the dark whiskers which streamed down his cheeks: even a halfwit's eyes would sparkle in such a setting. To crown the effect he wound a <span class="word" data-w="saffron">saffron</span> coloured turban around his head. This colour scheme never failed. People were attracted to him as bees are attracted to cosmos or dahlia stalks. He sat under the boughs of a spreading tamarind tree which flanked a path running through the Town Hall Park. It was a remarkable place in many ways: a surging crowd was always moving up and down this narrow road morning till night. A variety of trades and occupations was represented all along its way: medicine sellers, sellers of stolen hardware and junk, magicians, and, above all, an auctioneer of cheap cloth, who create enough din all day to attract the whole town. Next to him in <span class="word" data-w="vociferousness">vociferousness</span> came a vendor of fried <span class="word" data-w="groundnut">groundnut</span>, who gave his ware a fancy name each day, calling it 'Bombay Ice-cream' one day, and on the next 'Delhi Almond' and on the third 'Raja's Delicacy', and so on and so forth, and people flocked to him.</p>
+
+<p>A considerable portion of this crowd dallied before the astrologer too. The astrologer transacted his business by the light of a flare which crackled and smoked up above the groundnut heap nearby. Half the enchantment of the place was due to the fact that it did not have the benefit of municipal lighting. The place was lit up by shop lights. One or two had hissing gaslights, some had naked flares stuck on poles, some were lit up by old cycle lamps, and one or two, like the astrologer's managed without lights of their own. It was a bewildering criss-cross of light rays and moving shadows. This suited the astrologer very well, for the simple reason that he had not the least intended to be an astrologer when he began life; and he knew no more of what was going to happen to himself next minute. He was as much a stranger to the stars as were his innocent customers. Yet he said things which pleased and astonished everyone; that was more a matter of study, practice, and shrewd guesswork. All the same, it was as much an honest man's labour as any other, and he deserved the wages he carried home at the end of a day.</p>
+
+<p>He had left his village without previous thought or plan. If he had continued there he would have carried on the work of his forefathers—namely tilling the land, living, marrying, and ripening in his cornfield and ancestral home. But that was not to be. He had to leave home without telling anyone and he could not rest till he left it behind a couple of hundred miles. To a villager it is a great deal, as if an ocean flowed between.</p>
+
+<p>He had a working analysis of mankind's troubles; marriage, money, and the tangles of human ties. Long practice had sharpened his perception. Within five minutes he understood what was wrong. He charged three pice per question, never opened his mouth till the other had spoken for at least ten minutes, which provided him enough stuff for a dozen answers and advises. When he told the person before him, gazing at his palm, 'In many ways you are not getting the fullest results for your efforts', nine out of ten were disposed to agree with him. Or he questioned: 'Is there any woman in your family, maybe even a distant relative, who is not well disposed towards you?' Or he gave an analysis of character: 'Most of your troubles are due to your nature. How can you be otherwise with Saturn where he is? You have an impetuous nature and rough exterior'. This endeared him to their hearts immediately, for even the mildest of us loves to think that he has a forbidding exterior.</p>
+
+<p>The nuts vendor blew out his flare and rose to go home. This was a signal for the astrologer to bundle up too, since it left him in darkness except for a little shaft of green light which strayed in from somewhere and touched the ground before him. He picked up his cowrie shells and <span class="word" data-w="paraphernalia">paraphernalia</span> and was putting them back into his bag when the green shaft of light was blotted out; he looked up and saw a man before him. He sensed a possible client and said: "You look so <span class="word" data-w="careworn">careworn</span>. It will do you good to sit down for a while and chat with me'. The other grumbled some reply vaguely. The astrologer pressed his invitation; whereupon the other thrust his palm under his nose saying: "You call yourself an astrologer?' The astrologer felt <span class="word" data-w="piqued">piqued</span> and said, tilting the other's palm towards the green shaft of light: "Yours is a nature.... "Oh, stop that, the other said, 'tell me something worth while.</p>
+
+<p>Our friend felt piqued. 'I charge only three pice per question, and what you get ought to be good enough for your money.' At this the other withdrew his arm, took out an <span class="word" data-w="anna">anna</span>, and flung it out to him, saying: 'I have some questions to ask. If I prove you are bluffing, you must return that anna to me with interest.'</p>
+
+<p>'If you find my answers satisfactory, will you give me five rupees?'</p>
+<p>'No' 'Or will you give me eight annas?'</p>
+<p>'All right, provided you give me twice as much if you are wrong,' said the stranger. This pact was accepted after a little further argument. The astrologer sent up a prayer to heaven as the other lit a <span class="word" data-w="cheroot">cheroot</span>. The astrologer caught a glimpse of his face by the matchlight. There was a pause as cars hooted on the road, <span class="word" data-w="jutka">jutka</span> drivers swore at their horses, and the babble of the crowd agitated the semi-darkness of the park. The other sat down, sucking his cheroot, puffing out, sat there ruthlessly. The astrologer felt very uncomfortable. 'Here, take your anna back. I am not used to such challenges. It is late for me today.' He made preparations to bundle up.</p>
+
+<p>The other held his wrist and said: "You can't get out of it now. You dragged me in while I was passing.' The astrologer shivered in his grip; and his voice shook and became faint. 'Leave me today. I will speak to you tomorrow. The other thrust his palm in his face and said: 'Challenge is challenge. Go on. The astrologer proceeded with his throat drying up: 'There is a woman...'</p>
+
+<p>'Stop,' said the other. 'I don't want all that. Shall I succeed in my present search or not? Answer this and go. Otherwise I will not let you go till you <span class="word" data-w="disgorge">disgorge</span> all your coins.' The astrologer muttered a few <span class="word" data-w="incantation">incantations</span> and replied: 'All right. I will speak. But will you give me a rupee if what I say is convincing? Otherwise I will not open my mouth, and you may do what you like.' After a good deal of haggling the other agreed.</p>
+
+<p>The astrologer said: "You were left for dead. Am I right?"</p>
+<p>"Ah, tell me more."</p>
+<p>"A knife has passed through you once' said the astrologer. 'Good fellow!' He bared his chest to show the scar. What else?"</p>
+<p>'And then you were pushed into a well nearby in the field. You were left for dead.</p>
+<p>"I should have been dead if some passer-by had not chanced to peep into the well," exclaimed the other, overwhelmed by enthusiasm. "When shall I get at him?" he asked clenching his fist.</p>
+<p>'In the next world,' answered the astrologer. "He died four months ago in a far-off town. You will never see any more of him'. The other groaned on hearing it.</p>
+
+<p>The astrologer proceeded: 'Guru Nayak.'</p>
+<p>'You know my name!' the other said, <span class="word" data-w="taken aback">taken aback</span>.</p>
+<p>"As I know all other things. Guru Nayak, listen carefully to what I have to say. Your village is two days' journey due north of this town. Take the next train and be gone. I see once again great danger to your life if you go from home. He took out a pinch of sacred ash and held it to him. 'Rub it on your forehead and go home. Never travel Southward again, and you will live to be a hundred."</p>
+
+<p>'Why should I leave home again?' the other said <span class="word" data-w="reflectively">reflectively</span>.</p>
+<p>'I was only going away now and then to look for him and to choke out his life if I met him. He shook his head regretfully. 'He has escaped my hands. I hope at least he died as he deserved.' 'Yes,' said the astrologer. 'He was crushed under a <span class="word" data-w="lorry">lorry</span>. The other looked gratified to hear it.</p>
+
+<p>The place was deserted by the time the astrologer picked up his articles and put them into his bag. The green shaft was also gone, leaving the place in darkness and silence. The stranger had gone off into the night, after giving the astrologer a handful of coins.</p>
+
+<p>It was nearly midnight when the astrologer reached home. His wife was waiting for him at the door and demanded an explanation.</p>
+<p>He flung the coins at her and said: 'Count them. One man gave all that.' "Twelve and a half annas,' she said, counting. She was overjoyed. 'I can buy some <span class="word" data-w="jaggery">jaggery</span> and coconut tomorrow. The child has been asking for sweets for so many days now. I will prepare some nice stuff for her.'</p>
+
+<p>"The swine has cheated me! He promised me a rupee,' said the astrologer. She looked up at him. 'You look worried. What is wrong?'</p>
+<p>'Nothing,'</p>
+<p>After dinner, sitting on the <span class="word" data-w="pyol">pyol</span>, he told her: 'Do you know a great load is gone from me today? I thought I had the blood of a man on my hands all these years. That was the reason why I ran away from home, settled down here, and married you. He is alive.</p>
+<p>She gasped. "You tried to kill!"</p>
+<p>'Yes in our village, when I was a silly youngster, we drank, gambled, and quarrelled badly one day—why think of it now? Time to sleep,' he said yawning, and stretched himself on the pyol.</p>
+
+<h3>Key meaning of the ending</h3>
+<p>The final revelation changes our understanding of the entire story. The astrologer was not merely a clever fortune-teller; he had been carrying fear and guilt from his youth. Guru Nayak's survival removes the astrologer's belief that he had caused a man's death. The irony is that the astrologer uses deception to protect himself, yet the encounter unexpectedly brings him relief.</p>
 </section>
 
-<section id="vocab" class="tab hidden">
-<div class="card">
-<h2>Vocabulary Explorer</h2>
-<input class="search" id="vocabSearch" placeholder="Search a word..." oninput="renderVocab()">
-<div id="vocabList"></div>
+<section id="words" class="card">
+<h2>Clickable Vocabulary</h2>
+<div class="grid">
+<div><b>cowrie</b> — a small shell, traditionally used as a currency or ornament.</div>
+<div><b>obscure</b> — difficult to understand; not clear.</div>
+<div><b>mystic</b> — relating to hidden or mysterious meaning.</div>
+<div><b>palmyra</b> — relating to the palmyra palm; here, writing material.</div>
+<div><b>resplendent</b> — splendid; shining brilliantly.</div>
+<div><b>vermilion</b> — a bright red pigment.</div>
+<div><b>saffron</b> — an orange-yellow colour.</div>
+<div><b>vociferousness</b> — loudness; noisy expression.</div>
+<div><b>groundnut</b> — peanut.</div>
+<div><b>impetuous</b> — acting quickly without thinking carefully.</div>
+<div><b>paraphernalia</b> — equipment or things used for an activity.</div>
+<div><b>piqued</b> — offended or annoyed.</div>
+<div><b>anna</b> — an old Indian coin equal to four pice.</div>
+<div><b>cheroot</b> — a cigar cut square at both ends.</div>
+<div><b>jutka</b> — a two-wheeled horse-drawn vehicle.</div>
+<div><b>disgorge</b> — give up or hand over.</div>
+<div><b>incantation</b> — words spoken as part of a spell or ritual.</div>
+<div><b>taken aback</b> — suddenly surprised or startled.</div>
+<div><b>reflectively</b> — thoughtfully.</div>
+<div><b>lorry</b> — a large vehicle; in the supplied note, a horse-drawn wagon.</div>
+<div><b>jaggery</b> — unrefined sugar.</div>
+<div><b>pyol</b> — a low bench or raised platform.</div>
 </div>
+<p class="note">Click any highlighted word in the story for a quick explanation. On a phone, tap the word.</p>
 </section>
 
-<section id="analysis" class="tab hidden">
-<div class="card"><h2>Summary</h2>
-<p>The astrologer appears to be a professional fortune teller, but his success comes mainly from observation, practice and guesswork. One evening he meets Guru Nayak, a stranger who asks whether he will succeed in his search for a man who once attacked him.</p>
-<p>The astrologer recognises the situation from his own past. Years earlier, during a quarrel in his village, he had attacked Guru Nayak and believed him dead after pushing his unconscious body into a well. Guru Nayak survived because a passer-by rescued him.</p>
-<p>The astrologer tells Guru Nayak that the man he seeks is dead and advises him to return home and never travel south again. Guru Nayak accepts the prediction and leaves. At home, the astrologer reveals that a great burden has been lifted because he had feared that he had killed a man.</p>
-</div>
-<div class="card"><h2>Central Ideas</h2>
-<ul><li>Fate and human choice</li><li>The consequences of past actions</li><li>Irony and deception</li><li>Survival and transformation</li><li>Appearance versus reality</li><li>Human psychology and observation</li></ul>
-</div>
-<div class="card"><h2>Significance of the Title</h2>
-<p>The title seems to describe an ordinary working day, but that day becomes extraordinary when the astrologer encounters a man connected with his hidden past. The meeting changes his understanding of his own life and releases him from a long-held fear.</p>
-</div>
-<div class="card"><h2>Characters</h2>
-<p><b>The Astrologer:</b> observant, clever, resourceful and deeply affected by his past.</p>
-<p><b>Guru Nayak:</b> forceful, suspicious and determined to find the man he believes attacked him.</p>
-</div>
+<section id="grammar" class="card">
+<h2>Grammar from the Text</h2>
+<details><summary>Past tense</summary><p>“He opened his bag”, “He sat under the boughs”, “He had left his village” — the narrative mainly uses past forms because the events are being told as completed actions.</p></details>
+<details><summary>Relative clauses</summary><p>“which consisted of…”, “which flanked a path…” and “who gave his ware…” add information about nouns.</p></details>
+<details><summary>Simile</summary><p>“People were attracted to him as bees are attracted to cosmos or dahlia stalks.” The comparison makes the astrologer's attraction visually vivid.</p></details>
+<details><summary>Conditional structure</summary><p>“If I prove you are bluffing…” expresses a condition and its possible consequence.</p></details>
+<details><summary>Direct speech</summary><p>The dialogue between the astrologer and Guru Nayak makes the encounter immediate and creates suspense.</p></details>
+<details><summary>Vocabulary in context</summary><p>Words such as “careworn”, “piqued”, “haggling” and “taken aback” show emotion and action precisely rather than merely stating that a character was upset or surprised.</p></details>
 </section>
 
-<section id="grammar" class="tab hidden">
-<div class="card"><h2>Grammar from the Text</h2>
-<div id="grammarList"></div>
-</div>
+<section id="quiz" class="card quiz">
+<h2>MCQs</h2>
+<div id="qs"></div>
 </section>
 
-<section id="quiz" class="tab hidden">
-<div class="card"><h2>MCQ Practice</h2><div id="quizBox"></div><button class="btn primary" onclick="nextQuiz()">Next Question</button><p class="score" id="score"></p></div>
-</section>
-
-<section id="practice" class="tab hidden">
-<div class="card">
-<h2>Answer Practice</h2>
-<p><b>Question:</b> How does the astrologer use his knowledge of Guru Nayak's past to save himself?</p>
-<textarea id="answer" placeholder="Write your answer here..."></textarea>
-<button class="btn primary" onclick="evaluateAnswer()">Check Answer</button>
-<div id="feedback"></div>
-</div>
-</section>
-</main>
-
-<div id="popup" class="hidden"></div>
-<footer>Single-file textual learning engine • Progress is stored locally in your browser.</footer>
-
+</main><div id="tip"></div><footer>Single-file educational app • No external libraries required</footer>
 <script>
-const vocab={
-"punctually":["exactly at the stated time","ঠিক নির্দিষ্ট সময়ে","Adverb","The astrologer begins his work at the same time each day."],
-"obscure":["difficult to understand or not clear","অস্পষ্ট / দুর্বোধ্য","Adjective","The charts appear mysterious to his customers."],
-"mystic":["having a hidden or spiritual meaning","রহস্যময় / গুপ্ত","Adjective","The charts help create an appearance of supernatural knowledge."],
-"resplendent":["very bright or splendid","দীপ্তিমান / জাঁকজমকপূর্ণ","Adjective","The sacred ash and vermilion make his forehead striking."],
-"vermilion":["a bright red pigment","সিঁদুর / উজ্জ্বল লাল রঞ্জক","Noun","It forms part of the astrologer's appearance."],
-"saffron":["orange-yellow in colour","গেরুয়া / কমলা-হলুদ","Adjective/Noun","The turban completes his visual appearance."],
-"vociferousness":["noisy or loud outcry","উচ্চস্বরে কোলাহল","Noun","The marketplace is filled with loud sellers."],
-"groundnut":["peanut","চিনাবাদাম","Noun","A vendor sells fried groundnuts."],
-"dallied":["spent time slowly or lingered","দেরি করে সময় কাটানো / ঘোরাঘুরি করা","Verb","Some people linger before the astrologer."],
-"bewildering":["confusing or difficult to understand","বিভ্রান্তিকর","Adjective","The crossing lights and shadows create confusion."],
-"shrewd":["clever and practical in judgement","চতুর / বিচক্ষণ","Adjective","The astrologer depends on clever observation."],
-"perception":["the ability to notice or understand","উপলব্ধি / পর্যবেক্ষণশক্তি","Noun","Practice sharpens his perception of people."],
-"impetuous":["acting quickly without careful thought","অবিবেচকভাবে তাড়াহুড়ো করা","Adjective","It describes a person's quick and forceful nature."],
-"exterior":["the outside appearance","বাহ্যিক রূপ","Noun","The astrologer analyses a person's outward character."],
-"forbidding":["causing fear or suggesting danger","ভয়জাগানো / কঠোর","Adjective","People may like to think they have a formidable appearance."],
-"paraphernalia":["equipment or things used for a particular activity","সরঞ্জামপত্র","Noun","The astrologer gathers his professional equipment."],
-"piqued":["offended or annoyed","ক্ষুব্ধ / আহত","Adjective/Verb","The challenge makes the astrologer feel offended."],
-"cheroot":["a cigar cut square at both ends","দুই প্রান্ত সমান করে কাটা চুরুট","Noun","The stranger smokes while questioning him."],
-"disgorge":["to give up or hand over","ছেড়ে দেওয়া / হস্তান্তর করা","Verb","The stranger threatens to make him give up his coins."],
-"incantation":["words spoken as part of a spell","মন্ত্রোচ্চারণ","Noun","The astrologer mutters words to strengthen his performance."],
-"taken aback":["suddenly surprised or startled","হঠাৎ বিস্মিত / হতভম্ব","Phrase","Guru Nayak is surprised when the astrologer knows his name."],
-"reflectively":["in a thoughtful manner","চিন্তাশীলভাবে","Adverb","Guru Nayak considers the astrologer's advice."],
-"jaggery":["unrefined sugar","গুড়","Noun","The astrologer's wife plans to buy sweets."],
-"gratified":["pleased or satisfied","সন্তুষ্ট","Adjective","Guru Nayak is pleased to hear that his enemy is dead."],
-"astrologer":["a person who claims to interpret the influence of stars and planets","জ্যোতিষী","Noun","The central character earns his living as a fortune teller."]
+const meanings={
+cowrie:["cowrie","small shell","a small shell traditionally used as a coin or ornament"],
+obscure:["obscure","unclear","difficult to understand"],
+mystic:["mystic","mysterious","having a hidden or secret meaning"],
+palmyra:["palmyra","palm-related","relating to the palmyra palm; used here for writing material"],
+resplendent:["resplendent","splendid","shining brilliantly"],
+vermilion:["vermilion","bright red","a bright red pigment"],
+saffron:["saffron","orange-yellow","an orange-yellow colour"],
+vociferousness:["vociferousness","loudness","noisy or loud expression"],
+groundnut:["groundnut","peanut","a peanut"],
+paraphernalia:["paraphernalia","equipment","things used for a particular activity"],
+careworn:["careworn","worried-looking","showing signs of worry or tiredness"],
+piqued:["piqued","offended","aroused to anger or resentment"],
+anna:["anna","old coin","a former Indian coin equal to four pice"],
+cheroot:["cheroot","cigar","a cigar cut square at both ends"],
+jutka:["jutka","horse carriage","a two-wheeled horse-drawn vehicle"],
+disgorge:["disgorge","hand over","give up or hand over"],
+incantation:["incantation","ritual words","words spoken as part of a spell or ritual"],
+"taken aback":["taken aback","surprised","suddenly surprised or startled"],
+reflectively:["reflectively","thoughtfully","in a thoughtful manner"],
+lorry:["lorry","large vehicle","a large vehicle; the supplied note gives an older usage"],
+jaggery:["jaggery","unrefined sugar","sugar made by concentrating plant sap"],
+pyol:["pyol","low bench","a low bench or raised platform"]
 };
-
-const story=[
-`Punctually at midday he opened his bag and spread out his professional equipment, which consisted of a dozen cowrie shells, a square piece of cloth with obscure mystic charts on it, and a bundle of palmyra writing.`,
-`His forehead was resplendent with sacred ash and vermilion, and his eyes sparkled with a sharp abnormal gleam which was really an outcome of a continual searching look for customers, but which his simple clients took to be a prophetic light and felt comforted.`,
-`To crown the effect he wound a saffron coloured turban around his head. This colour scheme never failed. People were attracted to him as bees are attracted to flowers.`,
-`He sat under the boughs of a spreading tamarind tree which flanked a path running through the Town Hall Park. A surging crowd was always moving up and down this narrow road morning till night.`,
-`The place was lit up by shop lights. It was a bewildering criss-cross of light rays and moving shadows. This suited the astrologer very well, for the simple reason that he had not intended to be an astrologer when he began life; and he knew no more of what was going to happen to himself next minute.`,
-`Yet he said things which pleased and astonished everyone; that was more a matter of study, practice, and shrewd guesswork. All the same, it was as much an honest man's labour as any other, and he deserved the wages he carried home at the end of a day.`,
-`He had left his village without previous thought or plan. If he had continued there he would have carried on the work of his forefathers—tilling the land, living, marrying, and ripening in his cornfield and ancestral home. But that was not to be.`,
-`He had a working analysis of mankind's troubles; marriage, money, and the tangles of human ties. Long practice had sharpened his perception. Within five minutes he understood what was wrong.`,
-`The nuts vendor blew out his flare and rose to go home. This was a signal for the astrologer to bundle up too. He picked up his cowrie shells and paraphernalia and was putting them back into his bag when the green shaft of light was blotted out; he looked up and saw a man before him.`,
-`He sensed a possible client and said: "You look so careworn. It will do you good to sit down for a while and chat with me."`,
-`The other thrust his palm under his nose saying: "You call yourself an astrologer?" The astrologer felt challenged.`,
-`After a good deal of haggling the other agreed. The astrologer sent up a prayer to heaven as the other lit a cheroot.`,
-`The astrologer felt very uncomfortable. "Here, take your anna back. I am not used to such challenges. It is late for me today."`,
-`The other held his wrist and said: "You can't get out of it now. You dragged me in while I was passing."`,
-`The astrologer proceeded with his throat drying up: "There is a woman..." "Stop," said the other. "I don't want all that. Shall I succeed in my present search or not?"`,
-`The astrologer muttered a few incantations and replied: "All right. I will speak."`,
-`The astrologer said: "You were left for dead. Am I right?" "Ah, tell me more."`,
-`"A knife has passed through you once," said the astrologer. The man showed the scar. "And then you were pushed into a well nearby in the field. You were left for dead."`,
-`"I should have been dead if some passer-by had not chanced to peep into the well," exclaimed the other.`,
-`"In the next world," answered the astrologer. "He died four months ago in a far-off town. You will never see any more of him."`,
-`"Guru Nayak." "You know my name!" the other said, taken aback.`,
-`"Your village is two days' journey due north of this town. Take the next train and be gone. I see once again great danger to your life if you go from home."`,
-`"Never travel Southward again, and you will live to be a hundred."`,
-`The place was deserted by the time the astrologer picked up his articles and put them into his bag. The green shaft was also gone, leaving the place in darkness and silence.`,
-`It was nearly midnight when the astrologer reached home. His wife was waiting for him at the door and demanded an explanation.`,
-`"Twelve and a half annas," she said, counting. She was overjoyed. "I can buy some jaggery and coconut tomorrow."`,
-`"The swine has cheated me! He promised me a rupee," said the astrologer.`,
-`After dinner, sitting on the pyol, he told her: "Do you know a great load is gone from me today? I thought I had the blood of a man on my hands all these years. ... He is alive."`,
-`"You tried to kill!" she gasped.`,
-`"Yes, in our village, when I was a silly youngster, we drank, gambled, and quarrelled badly one day—why think of it now? Time to sleep," he said yawning, and stretched himself on the pyol.`
-];
-
-function escapeHTML(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-function interactiveText(s){
-let out=escapeHTML(s);
-Object.keys(vocab).sort((a,b)=>b.length-a.length).forEach(w=>{
-let re=new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','gi');
-out=out.replace(re,m=>`<span class="word" onclick="showWord('${w}')">${m}</span>`);
-});
-return out;
-}
-function renderLesson(){
-document.getElementById('lesson').innerHTML=story.map((p,i)=>`<p data-text="${escapeHTML(p.toLowerCase())}"><b>${i+1}.</b> ${interactiveText(p)}</p>`).join('');
-}
-function filterText(){
-let q=document.getElementById('textSearch').value.toLowerCase();
-document.querySelectorAll('#lesson p').forEach(p=>p.style.display=p.dataset.text.includes(q)?'block':'none');
-}
-function showWord(w){
-let d=vocab[w.toLowerCase()]||vocab[Object.keys(vocab).find(x=>x.toLowerCase()==w.toLowerCase())];
-if(!d)return;
-document.getElementById('popup').classList.remove('hidden');
-document.getElementById('popup').innerHTML=`<button class="close" onclick="closePopup()">×</button><h3>${w}</h3>
-<p><b>Meaning:</b> ${d[0]}</p><p><b>বাংলা:</b> ${d[1]}</p><p><b>Part of speech:</b> ${d[2]}</p><p><b>Context:</b> ${d[3]}</p>
-<p><b>Pronunciation:</b> <button class="btn" onclick="speak('${w}')">🔊 Listen</button></p>
-<p><b>Inner meaning:</b> In this story, the word contributes to the atmosphere, character or situation described around it.</p>
-<p><b>Example:</b> The teacher explained the word in its proper context.</p>`;
-}
-function closePopup(){document.getElementById('popup').classList.add('hidden')}
-function speak(t){if('speechSynthesis' in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='en-IN';speechSynthesis.speak(u)}}
-function renderVocab(){
-let q=(document.getElementById('vocabSearch')?.value||'').toLowerCase();
-document.getElementById('vocabList').innerHTML=Object.entries(vocab).filter(([w,d])=>(w+' '+d.join(' ')).toLowerCase().includes(q)).map(([w,d])=>`
-<div class="card"><h3>${w}</h3><p><b>বাংলা:</b> ${d[1]}</p><p><b>Meaning:</b> ${d[0]}</p><p><b>Grammar:</b> ${d[2]}</p><p><b>Context:</b> ${d[3]}</p><button class="btn" onclick="showWord('${w}')">Explore</button></div>`).join('');
-}
-const grammar=[
-["Punctually at midday he opened his bag.","Simple past tense; 'opened' is the past form of open.","দুপুর ঠিক সময়ে সে তার ব্যাগ খুলেছিল।"],
-["He had left his village without previous thought or plan.","Past perfect tense; 'had left' shows an earlier past action.","সে আগেই গ্রাম ছেড়ে চলে গিয়েছিল।"],
-["People were attracted to him.","Passive voice; the focus is on the people being attracted.","মানুষ তার প্রতি আকৃষ্ট হত।"],
-["He knew no more of what was going to happen.","'Was going to' expresses an expected future from a past viewpoint.","সে জানত না পরক্ষণে কী ঘটতে চলেছে।"],
-["You can't get out of it now.","Modal 'can't' expresses inability.","তুমি এখন আর এড়াতে পারবে না।"]
-];
-document.getElementById('grammarList').innerHTML=grammar.map(x=>`<div class="card"><p><b>${x[0]}</b></p><p>${x[1]}</p><p>${x[2]}</p></div>`).join('');
-
+document.querySelectorAll(".word").forEach(x=>x.onclick=()=>{let a=meanings[x.dataset.w];tip.innerHTML="<b>"+a[0]+"</b><br>Meaning: "+a[1]+"<br>Explanation: "+a[2]+"<br><small>Pronunciation: "+pron(a[0])+"</small>";tip.style.display="block";setTimeout(()=>tip.style.display="none",6500)});
+function pron(w){return ({cowrie:"KOW-ree",obscure:"uhb-SKYOOR",mystic:"MIS-tik",palmyra:"pal-MY-ruh",resplendent:"ri-SPLEN-dent",vermilion:"ver-MIL-yun",saffron:"SAF-run",vociferousness:"vo-SIF-er-us-ness",groundnut:"GROUND-nut",paraphernalia:"par-uh-fer-NAY-lee-uh",careworn:"KAIR-worn",piqued:"peekt",anna:"AN-uh",cheroot:"shuh-ROOT",jutka:"JUT-kuh",disgorge:"dis-GORJ",incantation:"in-kan-TAY-shun","taken aback":"TAY-kun uh-BACK",reflectively:"ri-FLEK-tiv-lee",lorry:"LOR-ee",jaggery:"JAG-uh-ree",pyol:"pee-ol"}[w]||w)}
+function go(id){document.getElementById(id).scrollIntoView({behavior:"smooth"})}
 const questions=[
-["What was the astrologer's real method of work?",["Genuine astronomical calculation","Study, practice and shrewd guesswork","Reading newspapers","Scientific experiments"],1],
-["Who was Guru Nayak?",["The astrologer's employer","A customer connected with his past","A police officer","A shopkeeper"],1],
-["Why did the astrologer leave his village?",["He wanted to study","He feared the consequences of his past action","He became wealthy","He was invited to the town"],1],
-["What does the ending reveal?",["The astrologer became a king","Guru Nayak was alive and the astrologer had feared killing him","The astrologer became a scientist","The market closed forever"],1],
-["Which theme is strongly present?",["Fate and consequences of past actions","Space travel","War technology","Industrialisation"],0]
+["Where did the astrologer sit?","Under a spreading tamarind tree","Inside a temple","At a railway station","In his village",0],
+["What helped the astrologer make his predictions?","Study, practice and shrewd guesswork","A telescope","A magic book","A royal order",0],
+["How much did he charge per question?","Three pice","One anna","Five rupees","Eight annas",0],
+["Who was the stranger?","Guru Nayak","The nuts vendor","An auctioneer","A magician",0],
+["What had happened to Guru Nayak in the past?","He had been attacked and left for dead","He had lost his money","He had become an astrologer","He had left the town peacefully",0],
+["What did the astrologer tell Guru Nayak about the man he was seeking?","That he was dead","That he lived nearby","That he was a king","That he was a doctor",0],
+["What did the astrologer discover at the end?","Guru Nayak was alive","His business had failed","His wife was leaving","The market had closed",0],
+["What major burden disappeared from the astrologer's mind?","The belief that he had killed a man","His debt","His fear of crowds","His business problem",0]
 ];
-let qi=0,score=0,answered=false;
-function renderQuiz(){
-let q=questions[qi];
-document.getElementById('quizBox').innerHTML=`<p><b>Question ${qi+1} of ${questions.length}</b></p><h3>${q[0]}</h3>`+q[1].map((o,i)=>`<button class="option" onclick="answerQuiz(${i},this)">${String.fromCharCode(65+i)}. ${o}</button>`).join('');
-document.getElementById('score').textContent=`Score: ${score}/${questions.length}`;
-answered=false;
-}
-function answerQuiz(i,el){
-if(answered)return; answered=true;
-let q=questions[qi];
-if(i===q[2]){el.classList.add('correct');score++}else{el.classList.add('wrong');document.querySelectorAll('.option')[q[2]].classList.add('correct')}
-document.getElementById('score').textContent=`Score: ${score}/${questions.length}`;
-localStorage.setItem('astrologerScore',score);
-}
-function nextQuiz(){if(!answered)return;qi=(qi+1)%questions.length;renderQuiz()}
-function evaluateAnswer(){
-let a=document.getElementById('answer').value.toLowerCase(), points=0;
-if(a.includes('guru')||a.includes('nayak'))points++;
-if(a.includes('past')||a.includes('village'))points++;
-if(a.includes('well')||a.includes('knife'))points++;
-if(a.includes('alive')||a.includes('dead'))points++;
-if(a.includes('return')||a.includes('home'))points++;
-document.getElementById('feedback').innerHTML=`<div class="card"><h3>Self-check: ${points}/5</h3><p>${points>=4?'Very good. Your answer includes the major points.':points>=2?'Good start. Add more evidence from the story.':'Review the relevant passage and try again.'}</p></div>`;
-}
-function showTab(id,btn){
-document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));
-document.getElementById(id).classList.remove('hidden');
-document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
-btn.classList.add('active');
-window.scrollTo({top:0,behavior:'smooth'});
-}
-renderLesson();renderVocab();renderQuiz();
+let qbox=document.getElementById("qs");
+questions.forEach((q,i)=>{let d=document.createElement("div");d.innerHTML="<h3>"+(i+1)+". "+q[0]+"</h3>";q[1+0];q.slice(1,5).forEach((o,j)=>{let b=document.createElement("button");b.textContent=String.fromCharCode(65+j)+". "+o;b.onclick=()=>{b.style.background=j===q[5]?"#d9f7ea":"#ffe0e0";b.innerHTML+=" — "+(j===q[5]?"Correct":"Try again")};d.appendChild(b)});qbox.appendChild(d)});
 </script>
-</body>
-</html>
+</body></html>
