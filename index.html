@@ -198,6 +198,19 @@ summary { font-weight: 700; cursor: pointer; color: var(--accent); }
 .quiz-btn.correct { background: #d1fae5; border-color: var(--good); color: #065f46; }
 .quiz-btn.wrong { background: #fee2e2; border-color: var(--danger); color: #991b1b; }
 .badge { color: var(--good); font-weight: 700; }
+/* Karaoke-style highlight while TTS reads */
+.tts-word { transition: background 0.12s, color 0.12s, box-shadow 0.12s; border-radius: 3px; padding: 0 1px; }
+.tts-word.active {
+  background: #fde047;
+  color: #1a2332;
+  box-shadow: 0 0 0 2px #facc15;
+  font-weight: 700;
+}
+[data-theme="dark"] .tts-word.active {
+  background: #ca8a04;
+  color: #fff;
+  box-shadow: 0 0 0 2px #eab308;
+}
 .speak-btn, .read-btn {
   background: var(--accent);
   color: white;
@@ -651,12 +664,15 @@ function searchText() {
   if (!found) alert('No match found in main text.');
 }
 
-/* ========== TEXT-TO-SPEECH (Human-like voice) ========== */
+/* ========== TEXT-TO-SPEECH + KARAOKE HIGHLIGHT ========== */
 let currentUtter = null;
+let highlightTimer = null;
+let activeHighlightEl = null;
+let originalHTMLCache = new Map(); // restore after speaking
+
 function getVoice(langPref = 'en') {
   const voices = speechSynthesis.getVoices();
-  // Prefer natural English voices
-  let preferred = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Daniel') || v.name.includes('Microsoft')));
+  let preferred = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Daniel') || v.name.includes('Microsoft') || v.name.includes('Premium')));
   if (!preferred) preferred = voices.find(v => v.lang.startsWith('en'));
   if (langPref === 'bn') {
     const bn = voices.find(v => v.lang.startsWith('bn') || v.name.toLowerCase().includes('bengali'));
@@ -664,42 +680,192 @@ function getVoice(langPref = 'en') {
   }
   return preferred || voices[0];
 }
-function speakText(text, lang = 'en-IN') {
+
+function clearHighlights() {
+  if (highlightTimer) { clearTimeout(highlightTimer); highlightTimer = null; }
+  document.querySelectorAll('.tts-word.active').forEach(w => w.classList.remove('active'));
+  // restore any temporarily modified paragraphs
+  originalHTMLCache.forEach((html, el) => { el.innerHTML = html; });
+  originalHTMLCache.clear();
+  activeHighlightEl = null;
+}
+
+function wrapWordsForHighlight(container) {
+  // Save original so we can restore later
+  if (!originalHTMLCache.has(container)) {
+    originalHTMLCache.set(container, container.innerHTML);
+  }
+  // Walk text nodes and wrap each word
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+  textNodes.forEach(node => {
+    if (!node.nodeValue.trim() || node.parentElement.classList.contains('tts-word')) return;
+    const frag = document.createDocumentFragment();
+    const parts = node.nodeValue.split(/(\s+)/);
+    parts.forEach(part => {
+      if (/^\s+$/.test(part) || part === '') {
+        frag.appendChild(document.createTextNode(part));
+      } else {
+        const span = document.createElement('span');
+        span.className = 'tts-word';
+        span.textContent = part;
+        frag.appendChild(span);
+      }
+    });
+    node.parentNode.replaceChild(frag, node);
+  });
+  return Array.from(container.querySelectorAll('.tts-word'));
+}
+
+function speakWithHighlight(containerOrText, lang = 'en-IN') {
   stopSpeech();
   if (!window.speechSynthesis) { alert('Speech synthesis not supported in this browser.'); return; }
+
+  let words = [];
+  let plainText = '';
+  let container = null;
+
+  if (typeof containerOrText === 'string') {
+    plainText = containerOrText;
+  } else {
+    container = containerOrText;
+    words = wrapWordsForHighlight(container);
+    plainText = words.map(w => w.textContent).join(' ');
+  }
+
+  const u = new SpeechSynthesisUtterance(plainText);
+  u.voice = getVoice(lang.startsWith('bn') ? 'bn' : 'en');
+  u.lang = lang;
+  u.rate = 0.90;
+  u.pitch = 1;
+  u.volume = 1;
+  currentUtter = u;
+
+  // Approximate per-word timing (works even when boundary events are missing)
+  if (words.length > 0) {
+    const avgCharsPerSec = 14 * u.rate; // rough speaking speed
+    let elapsed = 0;
+    let idx = 0;
+
+    const advance = () => {
+      if (idx > 0 && words[idx-1]) words[idx-1].classList.remove('active');
+      if (idx >= words.length) return;
+      words[idx].classList.add('active');
+      // keep current word in view if needed
+      words[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+      const wordLen = Math.max(words[idx].textContent.length, 3);
+      const delay = (wordLen / avgCharsPerSec) * 1000 + 40;
+      idx++;
+      highlightTimer = setTimeout(advance, delay);
+    };
+    // small delay so speech starts first
+    highlightTimer = setTimeout(advance, 180);
+
+    u.onend = u.onerror = () => {
+      clearHighlights();
+    };
+  }
+
+  // Prefer real boundary events when the browser supports them
+  u.onboundary = (e) => {
+    if (e.name === 'word' && words.length) {
+      // optional refinement – the timer already drives highlight
+    }
+  };
+
+  speechSynthesis.speak(u);
+}
+
+function speakText(text, lang = 'en-IN') {
+  // plain speak (no highlight) for short items like single words
+  stopSpeech();
+  if (!window.speechSynthesis) return;
   const u = new SpeechSynthesisUtterance(text);
   u.voice = getVoice(lang.startsWith('bn') ? 'bn' : 'en');
   u.lang = lang;
   u.rate = 0.92;
-  u.pitch = 1;
-  u.volume = 1;
   currentUtter = u;
   speechSynthesis.speak(u);
 }
+
 function speakPara(id) {
   const el = document.getElementById(id);
   if (!el) return;
-  const text = el.querySelector('p') ? Array.from(el.querySelectorAll('p')).map(p => p.innerText).join(' ') : el.innerText;
-  speakText(text);
+  // highlight inside the paragraph(s)
+  const target = el.querySelector('p') ? el : el;
+  speakWithHighlight(target);
 }
+
 function speakSection(id) {
   const el = document.getElementById(id);
-  if (el) speakText(el.innerText);
+  if (el) speakWithHighlight(el);
 }
+
 function speakStory() {
-  const paras = document.querySelectorAll('.story-para p');
-  let full = '';
-  paras.forEach(p => full += p.innerText + ' ');
-  speakText(full);
+  // speak all story paragraphs sequentially with highlight
+  const paras = Array.from(document.querySelectorAll('.story-para'));
+  if (!paras.length) return;
+  let i = 0;
+  const next = () => {
+    if (i >= paras.length) { clearHighlights(); return; }
+    const p = paras[i];
+    i++;
+    // temporary one-shot end handler
+    const origEnd = () => {};
+    speakWithHighlight(p);
+    // chain when current finishes
+    const check = setInterval(() => {
+      if (!speechSynthesis.speaking && !speechSynthesis.pending) {
+        clearInterval(check);
+        setTimeout(next, 300);
+      }
+    }, 200);
+  };
+  next();
 }
+
 function stopSpeech() {
   if (window.speechSynthesis) speechSynthesis.cancel();
   currentUtter = null;
+  clearHighlights();
 }
+
 // Load voices
 if (window.speechSynthesis) {
   speechSynthesis.onvoiceschanged = () => {};
   speechSynthesis.getVoices();
+}
+
+/* ========== QUIZ SOUNDS (Web Audio – no external files) ========== */
+const audioCtx = (window.AudioContext || window.webkitAudioContext) ? new (window.AudioContext || window.webkitAudioContext)() : null;
+
+function playTone(freq, type, duration, vol = 0.15) {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+}
+
+function playCorrectSound() {
+  // pleasant rising chime
+  playTone(523.25, 'sine', 0.12, 0.12);      // C5
+  setTimeout(() => playTone(659.25, 'sine', 0.12, 0.12), 90); // E5
+  setTimeout(() => playTone(783.99, 'sine', 0.18, 0.14), 180); // G5
+}
+
+function playWrongSound() {
+  // soft low buzz
+  playTone(180, 'sawtooth', 0.18, 0.08);
+  setTimeout(() => playTone(140, 'sawtooth', 0.22, 0.07), 100);
 }
 
 /* ========== VOCABULARY DATA ========== */
@@ -882,16 +1048,49 @@ const allQuestions = [
 // Render questions
 const qbox = document.getElementById('qs');
 let userAnswers = new Array(allQuestions.length).fill(null);
+const answeredCorrect = new Array(allQuestions.length).fill(null);
+// Track questions that have already been answered at least once → options will shuffle next time
+const seenQuestions = new Set();
+// Store shuffled option order per question so answer index stays correct
+const shuffledMap = new Map(); // idx → { opts: [...], ans: number }
+
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getQuestionData(i) {
+  const item = allQuestions[i];
+  // First time: original order. After seen: shuffle and remember.
+  if (seenQuestions.has(i)) {
+    if (!shuffledMap.has(i)) {
+      // create a shuffled version that preserves correct answer
+      const indices = [0,1,2,3];
+      const shuffledIdx = shuffleArray(indices);
+      const newOpts = shuffledIdx.map(k => item.opts[k]);
+      const newAns = shuffledIdx.indexOf(item.ans);
+      shuffledMap.set(i, { opts: newOpts, ans: newAns });
+    }
+    return shuffledMap.get(i);
+  }
+  // not yet seen → original
+  return { opts: item.opts, ans: item.ans };
+}
 
 function renderQuestions(cat = 'all') {
   qbox.innerHTML = '';
   allQuestions.forEach((item, i) => {
     if (cat !== 'all' && item.cat !== cat) return;
+    const data = getQuestionData(i);
     const div = document.createElement('div');
     div.className = 'q-item';
     div.dataset.idx = i;
     div.innerHTML = `<h3>${i+1}. ${item.q}</h3>`;
-    item.opts.forEach((opt, j) => {
+    data.opts.forEach((opt, j) => {
       const btn = document.createElement('button');
       btn.className = 'quiz-btn';
       btn.textContent = String.fromCharCode(65+j) + '. ' + opt;
@@ -902,14 +1101,23 @@ function renderQuestions(cat = 'all') {
           b.style.pointerEvents = 'auto';
         });
         userAnswers[i] = j;
-        if (j === item.ans) {
+        // mark as seen so next render will shuffle options
+        seenQuestions.add(i);
+        // clear cached shuffle so a fresh shuffle happens next time
+        shuffledMap.delete(i);
+
+        if (j === data.ans) {
           btn.classList.add('correct');
           btn.innerHTML += ' ✓';
+          answeredCorrect[i] = true;
+          playCorrectSound();
         } else {
           btn.classList.add('wrong');
           btn.innerHTML += ' ✗';
           // show correct
-          div.querySelectorAll('.quiz-btn')[item.ans].classList.add('correct');
+          div.querySelectorAll('.quiz-btn')[data.ans].classList.add('correct');
+          answeredCorrect[i] = false;
+          playWrongSound();
         }
         // lock
         div.querySelectorAll('.quiz-btn').forEach(b => b.style.pointerEvents = 'none');
@@ -928,26 +1136,28 @@ function filterQuiz(cat) {
 }
 
 function checkAllAnswers() {
-  let correct = 0;
-  allQuestions.forEach((item, i) => {
-    if (userAnswers[i] === item.ans) correct++;
-  });
+  let score = 0;
+  answeredCorrect.forEach(v => { if (v === true) score++; });
   const box = document.getElementById('scoreBox');
   box.style.display = 'block';
-  document.getElementById('scoreDisplay').textContent = correct + ' / 100';
+  document.getElementById('scoreDisplay').textContent = score + ' / 100';
   let msg = '';
-  if (correct >= 90) msg = 'Outstanding! Mastery level.';
-  else if (correct >= 75) msg = 'Excellent work!';
-  else if (correct >= 60) msg = 'Good effort. Review the text once more.';
+  if (score >= 90) msg = 'Outstanding! Mastery level.';
+  else if (score >= 75) msg = 'Excellent work!';
+  else if (score >= 60) msg = 'Good effort. Review the text once more.';
   else msg = 'Keep practising. Re-read the story and try again.';
   document.getElementById('scoreMsg').textContent = msg;
   box.scrollIntoView({behavior:'smooth'});
+  playCorrectSound();
 }
 
 function resetQuiz() {
   userAnswers = new Array(allQuestions.length).fill(null);
+  answeredCorrect.fill(null);
+  // Keep seenQuestions so options stay shuffled on re-attempt (user request: interchange after once seen)
+  // If you want completely fresh order every full reset, also do: seenQuestions.clear(); shuffledMap.clear();
   document.getElementById('scoreBox').style.display = 'none';
-  renderQuestions(document.querySelector('.cat-tab.active').dataset.cat || 'all');
+  renderQuestions(document.querySelector('.cat-tab.active')?.dataset.cat || 'all');
 }
 
 /* ========== CANVAS ANIMATIONS ========== */
@@ -1015,3 +1225,4 @@ function resetQuiz() {
 </script>
 </body>
 </html>
+
